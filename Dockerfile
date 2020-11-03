@@ -1,10 +1,22 @@
-FROM nginx:alpine
+FROM node:12.7-alpine as base-build
 
-MAINTAINER fabian.kirstein@fokus.fraunhofer.de
+# BUILD
+RUN mkdir /build
+
+ADD . /build
+WORKDIR /build
+
+RUN npm install
+RUN npm run build
+
+# DEPLOY
+
+FROM nginx:alpine as base-deploy
 
 EXPOSE 8080
-ADD dist /usr/share/nginx/html/
-COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
+#ADD dist /usr/share/nginx/html/
+COPY --from=base-build /build/dist /usr/share/nginx/html/
+COPY --from=base-build /build/nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 
 # The following steps are needed because of the OpenShift security constraints
 # Create some temp folders for later permission granting
@@ -16,7 +28,7 @@ RUN mkdir /var/cache/nginx/scgi_temp
 # support running as arbitrary user which belogs to the root group
 RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx /var/cache/nginx/client_temp
 
-COPY runtimeconfig.sh /
+COPY --from=base-build /build/runtimeconfig.sh /
 
 RUN chmod +x /runtimeconfig.sh
 RUN chmod a+rw /usr/share/nginx/html/js
