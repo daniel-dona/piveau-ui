@@ -20,7 +20,7 @@ test/e2e/reports
 *.sln
 *.sw?
 *.iml
-config/user-config.js
+#config/user-config.js
 
 docs/_build
 

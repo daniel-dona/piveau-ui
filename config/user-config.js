@@ -57,7 +57,7 @@ const glueConfig = {
     top: {
       main: {
         home: {
-          // href: 'https://link-to-external-url.com' (optional)
+           href: 'https://broker.mgds.xnor.ga/browse/' (optional)
           // target: ['_self' | '_blank'] (optional)
           show: true,
         },
